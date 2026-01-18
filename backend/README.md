@@ -8,8 +8,3 @@
 - [ ]  Deve ser possível deletar uma categoria
 - [ ]  Deve ser possível editar uma categoria
 - [ ]  Deve ser possível listar todas as categorias
-
-Além disso, também temos algumas regras importantes específicas para o front-end:
-
-- [ ]  É obrigatória a criação de uma aplicação React usando GraphQL para consultas na API e Vite como `bundler`;
-- [ ]  Siga o mais fielmente possível o layout do Figma;
