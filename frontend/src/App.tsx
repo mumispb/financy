@@ -2,9 +2,8 @@ import { Navigate, Route, Routes } from "react-router-dom"
 import { Layout } from "@/components/Layout"
 import { Login } from "./pages/Auth/Login"
 import { Signup } from "./pages/Auth/Signup"
-import { IdeasPage } from "./pages/Ideias"
+import { DashboardPage } from "./pages/Dashboard"
 import { useAuthStore } from "./stores/auth"
-import { Members } from "./pages/Members"
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
@@ -40,15 +39,7 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <IdeasPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/members"
-          element={
-            <ProtectedRoute>
-              <Members />
+              <DashboardPage />
             </ProtectedRoute>
           }
         />

@@ -20,33 +20,57 @@ export interface LoginInput {
   password: string
 }
 
-export interface Idea {
+// Financial Management Types
+export enum TransactionType {
+  income = 'income',
+  expense = 'expense',
+}
+
+export interface Category {
   id: string
-  title: string
+  name: string
   description?: string | null
-  authorId: string
-  author?: User
-  countVotes?: number
-  comments?: Comment[]
-  votes?: Vote[]
-  createdAt: string
-  updatedAt?: string
-}
-
-export interface Comment {
-  id: string
-  ideaId: string
-  authorId: string
-  author?: User
-  content: string
-  createdAt: string
-  updatedAt?: string
-}
-
-export interface Vote {
-  id: string
-  ideaId: string
   userId: string
   createdAt: string
+  updatedAt: string
 }
 
+export interface Transaction {
+  id: string
+  description: string
+  amount: number
+  type: TransactionType
+  date: string
+  userId: string
+  categoryId?: string | null
+  category?: Category | null
+  createdAt: string
+  updatedAt: string
+}
+
+// Input Types for Mutations
+export interface CreateCategoryInput {
+  name: string
+  description?: string
+}
+
+export interface UpdateCategoryInput {
+  name?: string
+  description?: string
+}
+
+export interface CreateTransactionInput {
+  description: string
+  amount: number
+  type: TransactionType
+  date?: string
+  categoryId?: string
+}
+
+export interface UpdateTransactionInput {
+  description?: string
+  amount?: number
+  type?: TransactionType
+  date?: string
+  categoryId?: string
+}

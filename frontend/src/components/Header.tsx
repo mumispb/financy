@@ -2,15 +2,15 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuthStore } from "../stores/auth"
 import logoIcon from "@/assets/logo-icon.svg"
 import { Button } from "./ui/button"
-import { Lightbulb, LogOut, Users } from "lucide-react"
+import { LayoutDashboard, LogOut, Folder } from "lucide-react"
 import { Avatar, AvatarFallback } from "./ui/avatar"
 
 export function Header() {
   const { user, logout, isAuthenticated } = useAuthStore()
   const location = useLocation()
   const navigate = useNavigate()
-  const isIdeasPage = location.pathname === "/"
-  const isMembersPage = location.pathname === "/members"
+  const isDashboardPage = location.pathname === "/"
+  const isCategoriesPage = location.pathname === "/categories"
 
   const handleLogout = () => {
     logout()
@@ -29,20 +29,20 @@ export function Header() {
               <Button
                 size="sm"
                 className="gap-2"
-                variant={isIdeasPage ? "default" : "ghost"}
+                variant={isDashboardPage ? "default" : "ghost"}
               >
-                <Lightbulb className="h-4 w-4" />
-                Ideais
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
               </Button>
             </Link>
-            <Link to="/members">
+            <Link to="/categories">
               <Button
                 size="sm"
                 className="gap-2"
-                variant={isMembersPage ? "default" : "ghost"}
+                variant={isCategoriesPage ? "default" : "ghost"}
               >
-                <Users className="h-4 w-4" />
-                Membros
+                <Folder className="h-4 w-4" />
+                Categorias
               </Button>
             </Link>
           </div>
