@@ -8,16 +8,16 @@ import { expressMiddleware } from '@as-integrations/express5'
 import { AuthResolver } from './resolvers/auth.resolver'
 import { UserResolver } from './resolvers/user.resolver'
 import { buildContext } from './graphql/context'
-import { IdeaResolver } from './resolvers/idea.resolver'
-import { CommentResolver } from './resolvers/comment.resolver'
-import { VoteResolver } from './resolvers/vote.resolver'
+import { TransactionResolver } from './resolvers/transaction.resolver'
+import { CategoryResolver } from './resolvers/category.resolver'
 
 async function bootstrap() {
   const app = express()
 
   // Habilitar CORS
   app.use(cors({
-    origin: 'http://localhost:5173',
+    // origin: 'http://localhost:5173',
+    origin: true, // Allow all origins (for development)
     credentials: true,
   }))
 
@@ -25,9 +25,8 @@ async function bootstrap() {
     resolvers: [
       AuthResolver,
       UserResolver,
-      IdeaResolver,
-      CommentResolver,
-      VoteResolver,
+      TransactionResolver,
+      CategoryResolver,
     ],
     validate: false,
     emitSchemaFile: './schema.graphql',

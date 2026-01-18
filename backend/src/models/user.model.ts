@@ -27,7 +27,7 @@ export class UserModel {
   password?: string
 
   @Field(() => Role, { nullable: true })
-  role?: string
+  role?: Role
 
   @Field(() => GraphQLISODateTime)
   createdAt!: Date

@@ -1,18 +1,18 @@
 import { Field, InputType } from 'type-graphql'
 
 @InputType()
-export class CreateIdeaInput {
+export class CreateCategoryInput {
   @Field(() => String)
-  title!: string
+  name!: string
 
   @Field(() => String, { nullable: true })
   description?: string
 }
 
 @InputType()
-export class UpdateIdeaInput {
+export class UpdateCategoryInput {
   @Field(() => String, { nullable: true })
-  title?: string
+  name?: string
 
   @Field(() => String, { nullable: true })
   description?: string

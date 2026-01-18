@@ -3,24 +3,26 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-type CommentModel {
-  author: UserModel
-  authorId: String!
-  content: String!
+type CategoryModel {
   createdAt: DateTimeISO!
-  id: ID!
-  idea: IdeaModel
-  ideaId: String!
-  updatedAt: DateTimeISO!
-}
-
-input CreateCommentInput {
-  content: String!
-}
-
-input CreateIdeaInput {
   description: String
-  title: String!
+  id: ID!
+  name: String!
+  updatedAt: DateTimeISO!
+  userId: String!
+}
+
+input CreateCategoryInput {
+  description: String
+  name: String!
+}
+
+input CreateTransactionInput {
+  amount: Float!
+  categoryId: String
+  date: DateTimeISO
+  description: String!
+  type: TransactionType!
 }
 
 input CreateUserInput {
@@ -32,19 +34,6 @@ input CreateUserInput {
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
 """
 scalar DateTimeISO
-
-type IdeaModel {
-  author: UserModel
-  authorId: String!
-  comments: [CommentModel!]
-  countVotes: Float
-  createdAt: DateTimeISO!
-  description: String
-  id: ID!
-  title: String!
-  updatedAt: DateTimeISO!
-  votes: [VoteModel!]
-}
 
 input LoginInput {
   email: String!
@@ -58,22 +47,25 @@ type LoginOutput {
 }
 
 type Mutation {
-  createComment(data: CreateCommentInput!, ideaId: String!): CommentModel!
-  createIdea(data: CreateIdeaInput!): IdeaModel!
+  createCategory(data: CreateCategoryInput!): CategoryModel!
+  createTransaction(data: CreateTransactionInput!): TransactionModel!
   createUser(data: CreateUserInput!): UserModel!
-  deleteIdea(id: String!): Boolean!
+  deleteCategory(id: String!): Boolean!
+  deleteTransaction(id: String!): Boolean!
   deleteUser(id: String!): Boolean!
   login(data: LoginInput!): LoginOutput!
   register(data: RegisterInput!): RegisterOutput!
-  toggleVote(ideaId: String!): Boolean!
-  updateIdea(data: UpdateIdeaInput!, id: String!): IdeaModel!
+  updateCategory(data: UpdateCategoryInput!, id: String!): CategoryModel!
+  updateTransaction(data: UpdateTransactionInput!, id: String!): TransactionModel!
   updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
 type Query {
-  getIdea(id: String!): IdeaModel!
+  getCategory(id: String!): CategoryModel!
+  getTransaction(id: String!): TransactionModel!
   getUser(id: String!): UserModel!
-  listIdeas: [IdeaModel!]!
+  listCategories: [CategoryModel!]!
+  listTransactions: [TransactionModel!]!
   listUsers: [UserModel!]!
 }
 
@@ -97,9 +89,35 @@ enum Role {
   viewer
 }
 
-input UpdateIdeaInput {
+type TransactionModel {
+  amount: Float!
+  categoryId: String
+  createdAt: DateTimeISO!
+  date: DateTimeISO!
+  description: String!
+  id: ID!
+  type: TransactionType!
+  updatedAt: DateTimeISO!
+  userId: String!
+}
+
+"""Type of transaction"""
+enum TransactionType {
+  expense
+  income
+}
+
+input UpdateCategoryInput {
   description: String
-  title: String
+  name: String
+}
+
+input UpdateTransactionInput {
+  amount: Float
+  categoryId: String
+  date: DateTimeISO
+  description: String
+  type: TransactionType
 }
 
 input UpdateUserInput {
@@ -115,12 +133,4 @@ type UserModel {
   password: String
   role: Role
   updatedAt: DateTimeISO!
-}
-
-type VoteModel {
-  id: ID!
-  idea: IdeaModel
-  ideaId: String!
-  user: UserModel
-  userId: String!
 }
