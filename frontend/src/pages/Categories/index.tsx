@@ -76,7 +76,7 @@ export function CategoriesPage() {
     <Page>
       <div className="space-y-6">
         {/* Header */}
-        <div className="space-y-2">
+        <div className="space-y-1">
           <div className="flex items-center justify-between">
             <Label className="text-3xl font-bold text-2xl text-gray-800">Categorias</Label>
             <Button 
@@ -93,41 +93,47 @@ export function CategoriesPage() {
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-3">
           <div className="rounded-lg border bg-white p-6">
-            <div className="flex items-center gap-3">
-                <Tag className="h-6 w-6 text-gray-600" />
+            <div className="flex gap-3">
+                <div className="mt-1.5">
+                  <Tag className="h-6 w-6 text-gray-600" />
+                </div>
               <div>
-                <p className="text-3xl font-bold text-gray-900">{categories.length}</p>
+                <p className="text-[28px] font-bold text-gray-900">{categories.length}</p>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">Total de Categorias</p>
               </div>
             </div>
           </div>
 
           <div className="rounded-lg border bg-white p-6">
-            <div className="flex items-center gap-3">
-                <ArrowUpDown className="h-6 w-6 text-purple-600" />
+            <div className="flex  gap-3">
+                <div className="mt-1.5">
+                  <ArrowUpDown className="h-6 w-6 text-purple-600" />
+                </div>
               <div>
-                <p className="text-3xl font-bold text-gray-900">{totalTransactions}</p>
+                <p className="text-[28px] font-bold text-gray-900">{totalTransactions}</p>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">Total de Transações</p>
               </div>
             </div>
           </div>
 
           <div className="rounded-lg border bg-white p-6">
-            <div className="flex items-center gap-3">
+            <div className="flex  gap-3">
               {mostUsedCategory?.icon && CATEGORY_ICON_MAP[mostUsedCategory.icon] ? (
                 (() => {
                   const IconComponent = CATEGORY_ICON_MAP[mostUsedCategory.icon]
                   return (
-                    <div style={{ color: mostUsedCategory.color || "#6B7280" }}>
+                    <div className="mt-1.5" style={{ color: mostUsedCategory.color || "#6B7280" }}>
                       <IconComponent className="h-6 w-6" />
                     </div>
                   )
                 })()
               ) : (
+                <div className="mt-1.5">
                   <Tag className="h-6 w-6 text-gray-600" />
+                </div>
               )}
-              <div>
-                <p className="text-xl font-bold text-gray-900">{mostUsedCategory?.name || "—"}</p>
+              <div className="flex gap-1 flex-col">
+                <p className="text-[28px] font-bold text-gray-900">{mostUsedCategory?.name || "—"}</p>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">Categoria Mais Utilizada</p>
               </div>
             </div>
@@ -135,8 +141,7 @@ export function CategoriesPage() {
         </div>
 
         {/* Categories Grid */}
-        <div className="space-y-4">
-          <Label className="text-xl font-medium">Suas Categorias</Label>
+        <div className="space-y-5">
           {categoriesLoading ? (
             <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(284px, 1fr))' }}>
               {Array.from({ length: 8 }).map((_, i) => (
