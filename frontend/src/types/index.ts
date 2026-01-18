@@ -35,6 +35,8 @@ export interface Category {
   id: string
   name: string
   description?: string | null
+  icon?: string | null
+  color?: string | null
   userId: string
   createdAt: string
   updatedAt: string
@@ -57,11 +59,15 @@ export interface Transaction {
 export interface CreateCategoryInput {
   name: string
   description?: string
+  icon?: string
+  color?: string
 }
 
 export interface UpdateCategoryInput {
   name?: string
   description?: string
+  icon?: string
+  color?: string
 }
 
 export interface CreateTransactionInput {

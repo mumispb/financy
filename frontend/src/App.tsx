@@ -3,6 +3,7 @@ import { Layout } from "@/components/Layout"
 import { Login } from "./pages/Auth/Login"
 import { Signup } from "./pages/Auth/Signup"
 import { DashboardPage } from "./pages/Dashboard"
+import { CategoriesPage } from "./pages/Categories"
 import { ProfilePage } from "./pages/Profile"
 import { useAuthStore } from "./stores/auth"
 
@@ -41,6 +42,14 @@ function App() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/categories"
+          element={
+            <ProtectedRoute>
+              <CategoriesPage />
             </ProtectedRoute>
           }
         />
