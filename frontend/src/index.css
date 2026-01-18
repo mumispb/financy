@@ -29,6 +29,19 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    /* Design tokens from Figma style guide */
+    --brand-base: #1f6f43;
+    --brand-dark: #1a5d37;
+    --gray-100: #f8f9fa;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #111827;
+    --neutral-white: #ffffff;
   }
 
   .dark {
@@ -63,8 +76,8 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }
-

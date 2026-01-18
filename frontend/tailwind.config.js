@@ -18,6 +18,9 @@
     		}
     	},
     	extend: {
+    		fontFamily: {
+    			sans: ['Inter', 'sans-serif'],
+    		},
     		colors: {
     			border: 'hsl(var(--border))',
     			input: 'hsl(var(--input))',
@@ -58,6 +61,25 @@
     				'3': 'hsl(var(--chart-3))',
     				'4': 'hsl(var(--chart-4))',
     				'5': 'hsl(var(--chart-5))'
+    			},
+    			// Design tokens from Figma style guide
+    			brand: {
+    				DEFAULT: 'var(--brand-base)',
+    				base: 'var(--brand-base)',
+    				dark: 'var(--brand-dark)',
+    			},
+    			gray: {
+    				100: 'var(--gray-100)',
+    				200: 'var(--gray-200)',
+    				300: 'var(--gray-300)',
+    				400: 'var(--gray-400)',
+    				500: 'var(--gray-500)',
+    				600: 'var(--gray-600)',
+    				700: 'var(--gray-700)',
+    				800: 'var(--gray-800)',
+    			},
+    			neutral: {
+    				white: 'var(--neutral-white)',
     			}
     		},
     		borderRadius: {
