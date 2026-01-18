@@ -21,9 +21,9 @@ export function Layout({ children }: LayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-200">
+    <div className="min-h-screen">
       <Header />
-      <main className="mx-auto px-16 py-4">{children}</main>
+      <main className="mx-auto px-16 py-4 bg-gray-100">{children}</main>
       <Toaster />
     </div>
   )

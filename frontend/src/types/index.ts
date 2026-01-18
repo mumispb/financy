@@ -20,6 +20,11 @@ export interface LoginInput {
   password: string
 }
 
+export interface UpdateUserInput {
+  name?: string
+  role?: string
+}
+
 // Financial Management Types
 export enum TransactionType {
   income = 'income',

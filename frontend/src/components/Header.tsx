@@ -11,7 +11,7 @@ export function Header() {
   const isCategoriesPage = location.pathname === "/categories"
 
   return (
-    <div className="w-full px-16 pt-6 pb-4">
+    <div className="w-full px-16 pt-6 pb-4 bg-neutral-white">
       {isAuthenticated && (
         <div className="flex items-center justify-between w-full">
           {/* Logo */}
@@ -54,11 +54,13 @@ export function Header() {
           </nav>
 
           {/* User Profile */}
-          <Avatar className="h-10 w-10">
-            <AvatarFallback className="bg-gray-300 text-gray-700 font-semibold text-sm">
-              {user?.name?.split(' ').map(n => n.charAt(0).toUpperCase()).join('').slice(0, 2)}
-            </AvatarFallback>
-          </Avatar>
+          <Link to="/profile">
+            <Avatar className="h-10 w-10 cursor-pointer hover:opacity-80 transition-opacity">
+              <AvatarFallback className="bg-gray-300 text-gray-700 font-semibold text-sm">
+                {user?.name?.split(' ').map(n => n.charAt(0).toUpperCase()).join('').slice(0, 2)}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
         </div>
       )}
     </div>
