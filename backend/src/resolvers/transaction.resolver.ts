@@ -6,11 +6,12 @@ import {
   UseMiddleware,
 } from 'type-graphql'
 import { TransactionModel } from '../models/transaction.model'
-import { CreateTransactionInput, UpdateTransactionInput } from '../dtos/input/transaction.input'
+import { CreateTransactionInput, TransactionFiltersInput, UpdateTransactionInput } from '../dtos/input/transaction.input'
 import { TransactionService } from '../services/transaction.service'
 import { GqlUser } from '../graphql/decorators/user.decorator'
 import { IsAuth } from '../middlewares/auth.middleware'
 import { UserModel } from '../models/user.model'
+import { PaginatedTransactionsResponse } from '../dtos/output/pagination.output'
 
 @Resolver(() => TransactionModel)
 @UseMiddleware(IsAuth)
@@ -46,6 +47,14 @@ export class TransactionResolver {
   @Query(() => [TransactionModel])
   async listTransactions(@GqlUser() user: UserModel): Promise<TransactionModel[]> {
     return this.transactionService.listTransactions(user.id)
+  }
+
+  @Query(() => PaginatedTransactionsResponse)
+  async listTransactionsPaginated(
+    @Arg('filters', () => TransactionFiltersInput) filters: TransactionFiltersInput,
+    @GqlUser() user: UserModel
+  ): Promise<PaginatedTransactionsResponse> {
+    return this.transactionService.listTransactionsPaginated(user.id, filters)
   }
 
   @Query(() => TransactionModel)

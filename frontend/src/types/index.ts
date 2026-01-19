@@ -85,3 +85,28 @@ export interface UpdateTransactionInput {
   date?: string
   categoryId?: string
 }
+
+// Pagination Types
+export interface PaginationMetadata {
+  currentPage: number
+  totalPages: number
+  totalItems: number
+  itemsPerPage: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+}
+
+export interface PaginatedTransactionsResponse {
+  transactions: Transaction[]
+  pagination: PaginationMetadata
+}
+
+export interface TransactionFiltersInput {
+  search?: string
+  type?: TransactionType
+  categoryId?: string
+  month?: number
+  year?: number
+  page: number
+  limit: number
+}

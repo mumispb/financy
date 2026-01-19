@@ -1,5 +1,6 @@
 import { prismaClient } from '../../prisma/prisma'
-import { CreateTransactionInput, UpdateTransactionInput } from '../dtos/input/transaction.input'
+import { CreateTransactionInput, TransactionFiltersInput, UpdateTransactionInput } from '../dtos/input/transaction.input'
+import { PaginatedTransactionsResponse } from '../dtos/output/pagination.output'
 
 export class TransactionService {
   async createTransaction(data: CreateTransactionInput, userId: string) {
@@ -35,6 +36,86 @@ export class TransactionService {
         date: 'desc',
       },
     })
+  }
+
+  async listTransactionsPaginated(
+    userId: string, 
+    filters: TransactionFiltersInput
+  ): Promise<PaginatedTransactionsResponse> {
+    const { search, type, categoryId, month, year, page, limit } = filters
+    
+    // Build where clause
+    const where: any = {
+      userId,
+    }
+
+    // Add search filter
+    if (search) {
+      where.description = {
+        contains: search,
+        mode: 'insensitive',
+      }
+    }
+
+    // Add type filter
+    if (type) {
+      where.type = type
+    }
+
+    // Add category filter
+    if (categoryId) {
+      where.categoryId = categoryId
+    }
+
+    // Add date filters (month/year)
+    if (month !== undefined && year !== undefined) {
+      const startDate = new Date(year, month - 1, 1)
+      const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+      
+      where.date = {
+        gte: startDate,
+        lte: endDate,
+      }
+    } else if (year !== undefined) {
+      const startDate = new Date(year, 0, 1)
+      const endDate = new Date(year, 11, 31, 23, 59, 59, 999)
+      
+      where.date = {
+        gte: startDate,
+        lte: endDate,
+      }
+    }
+
+    // Calculate pagination
+    const skip = (page - 1) * limit
+    const take = limit
+
+    // Execute queries
+    const [transactions, totalItems] = await Promise.all([
+      prismaClient.transaction.findMany({
+        where,
+        orderBy: {
+          date: 'desc',
+        },
+        skip,
+        take,
+      }),
+      prismaClient.transaction.count({ where }),
+    ])
+
+    const totalPages = Math.ceil(totalItems / limit)
+
+    return {
+      transactions,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+        itemsPerPage: limit,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    }
   }
 
   async getTransaction(id: string, userId: string) {

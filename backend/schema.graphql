@@ -64,12 +64,27 @@ type Mutation {
   updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
+type PaginatedTransactionsResponse {
+  pagination: PaginationMetadata!
+  transactions: [TransactionModel!]!
+}
+
+type PaginationMetadata {
+  currentPage: Int!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  itemsPerPage: Int!
+  totalItems: Int!
+  totalPages: Int!
+}
+
 type Query {
   getCategory(id: String!): CategoryModel!
   getTransaction(id: String!): TransactionModel!
   getUser(id: String!): UserModel!
   listCategories: [CategoryModel!]!
   listTransactions: [TransactionModel!]!
+  listTransactionsPaginated(filters: TransactionFiltersInput!): PaginatedTransactionsResponse!
   listUsers: [UserModel!]!
 }
 
@@ -91,6 +106,16 @@ enum Role {
   member
   owner
   viewer
+}
+
+input TransactionFiltersInput {
+  categoryId: String
+  limit: Int! = 10
+  month: Int
+  page: Int! = 1
+  search: String
+  type: TransactionType
+  year: Int
 }
 
 type TransactionModel {
