@@ -1,7 +1,7 @@
 import EditIcon from "@/assets/icons/edit.svg?react"
 import TrashIcon from "@/assets/icons/trash.svg?react"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { IconButton } from "@/components/ui/icon-button"
 import { CATEGORY_ICON_MAP } from "@/constants/icons"
 import { Category } from "@/types"
 
@@ -37,23 +37,18 @@ export function CategoryCard({ category, transactionCount, onEdit, onDelete }: C
             )}
           </div>
           <div className="flex gap-2">
-          <Button
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-50 border-gray-200"
+            <IconButton
+              icon={TrashIcon}
+              variant="destructive"
+              size="md"
               onClick={() => onDelete(category.id)}
-            >
-              <TrashIcon className="h-5 w-5" />
-            </Button>
-            <Button
+            />
+            <IconButton
+              icon={EditIcon}
               variant="outline"
-              size="icon"
-              className="h-9 w-9 text-gray-600 hover:text-gray-700 hover:bg-gray-50 border-gray-200"
+              size="md"
               onClick={() => onEdit(category)}
-            >
-              <EditIcon className="h-5 w-5" />
-            </Button>
-            
+            />
           </div>
         </div>
 

@@ -1,7 +1,6 @@
 import { Page } from "@/components/Page"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { TransactionDialog } from "./components/TransactionDialog"
 import { TransactionFilters, TransactionFiltersState } from "./components/TransactionFilters"
 import { useState, useEffect } from "react"
@@ -25,6 +24,10 @@ import EditIcon from "@/assets/icons/edit.svg?react"
 import TrashIcon from "@/assets/icons/trash.svg?react"
 import DownloadIcon from "@/assets/icons/download.svg?react"
 import UploadIcon from "@/assets/icons/upload.svg?react"
+import PlusIcon from "@/assets/icons/plus.svg?react"
+import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react"
+import ChevronRightIcon from "@/assets/icons/chevron-right.svg?react"
+import { IconButton } from "@/components/ui/icon-button"
 
 interface PaginationMetadata {
   currentPage: number
@@ -157,7 +160,7 @@ export function TransactionsPage() {
               onClick={() => setOpenDialog(true)}
               className="bg-[#1D7A5E] hover:bg-[#166149]"
             >
-              <Plus className="h-4 w-4" />
+              <PlusIcon className="h-4 w-4" />
               Nova transação
             </Button>
           </div>
@@ -283,21 +286,21 @@ export function TransactionsPage() {
                       {/* Actions */}
                       <TableCell>
                         <div className="flex items-center justify-center gap-2">
-                          
-                          <button
+                          <IconButton
+                            icon={TrashIcon}
+                            variant="destructive"
+                            size="sm"
                             onClick={() => handleDelete(transaction.id)}
-                            className="p-2 text-red-600 hover:text-red-700 rounded-lg transition-colors border border-gray-300 hover:border-red-600 bg-white"
                             title="Excluir"
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </button>
-                          <button
+                          />
+                          <IconButton
+                            icon={EditIcon}
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleEdit(transaction)}
-                            className="p-2 text-gray-600 hover:text-[#1D7A5E] rounded-lg transition-colors border border-gray-300 hover:border-[#1D7A5E] bg-white"
                             title="Editar"
-                          >
-                            <EditIcon className="h-4 w-4" />
-                          </button>
+                            className="hover:text-[#1D7A5E] hover:border-[#1D7A5E]"
+                          />
                         </div>
                       </TableCell>
                     </TableRow>
@@ -316,15 +319,13 @@ export function TransactionsPage() {
                 {pagination.totalItems} resultado{pagination.totalItems !== 1 ? 's' : ''}
               </div>
               <div className="flex items-center gap-2">
-                <Button
+                <IconButton
+                  icon={ChevronLeftIcon}
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(pagination.currentPage - 1)}
                   disabled={!pagination.hasPreviousPage}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
+                />
                 {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
                   <Button
                     key={page}
@@ -340,15 +341,13 @@ export function TransactionsPage() {
                     {page}
                   </Button>
                 ))}
-                <Button
+                <IconButton
+                  icon={ChevronRightIcon}
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(pagination.currentPage + 1)}
                   disabled={!pagination.hasNextPage}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+                />
               </div>
             </div>
           )}

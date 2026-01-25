@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import XIcon from "@/assets/icons/x.svg?react"
-import { Button } from "@/components/ui/button"
+import { IconButton } from "@/components/ui/icon-button"
 
 import { cn } from "@/lib/utils"
 
@@ -44,14 +44,13 @@ const DialogContent = React.forwardRef<
     >
       {children}
       <DialogPrimitive.Close asChild>
-        <Button
+        <IconButton
+          icon={XIcon}
           variant="outline"
-          size="icon"
-          className="absolute right-4 top-4 h-9 w-9 text-gray-600 hover:text-gray-700 hover:bg-gray-50 border-gray-200"
-        >
-          <XIcon className="h-5 w-5" />
-          <span className="sr-only">Close</span>
-        </Button>
+          size="md"
+          className="absolute right-4 top-4"
+          aria-label="Close"
+        />
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>

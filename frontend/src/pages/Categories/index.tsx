@@ -1,7 +1,6 @@
 import { Page } from "@/components/Page"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Plus, Tag, ArrowUpDown } from "lucide-react"
 import { NewCategoryDialog } from "./components/NewCategoryDialog"
 import { CategoryCard } from "./components/CategoryCard"
 import { useState } from "react"
@@ -12,6 +11,9 @@ import { DELETE_CATEGORY } from "@/lib/graphql/mutations/Category"
 import { Category, Transaction } from "@/types"
 import { toast } from "sonner"
 import { CATEGORY_ICON_MAP } from "@/constants/icons"
+import PlusIcon from "@/assets/icons/plus.svg?react"
+import TagIcon from "@/assets/icons/tag.svg?react"
+import SortIcon from "@/assets/icons/sort.svg?react"
 
 interface CategoryWithStats extends Category {
   transactionCount: number
@@ -83,7 +85,7 @@ export function CategoriesPage() {
               onClick={() => setOpenDialog(true)}
               className="bg-[#1D7A5E] hover:bg-[#166149]"
             >
-              <Plus className="h-4 w-4" />
+              <PlusIcon className="h-4 w-4" />
               Nova categoria
             </Button>
           </div>
@@ -95,7 +97,7 @@ export function CategoriesPage() {
           <div className="rounded-lg border bg-white p-6">
             <div className="flex gap-3">
                 <div className="mt-1.5">
-                  <Tag className="h-6 w-6 text-gray-600" />
+                  <TagIcon className="h-6 w-6 text-gray-600" />
                 </div>
               <div>
                 <p className="text-[28px] font-bold text-gray-900">{categories.length}</p>
@@ -107,7 +109,7 @@ export function CategoriesPage() {
           <div className="rounded-lg border bg-white p-6">
             <div className="flex  gap-3">
                 <div className="mt-1.5">
-                  <ArrowUpDown className="h-6 w-6 text-purple-600" />
+                  <SortIcon className="h-6 w-6 text-purple-600" />
                 </div>
               <div>
                 <p className="text-[28px] font-bold text-gray-900">{totalTransactions}</p>
@@ -129,7 +131,7 @@ export function CategoriesPage() {
                 })()
               ) : (
                 <div className="mt-1.5">
-                  <Tag className="h-6 w-6 text-gray-600" />
+                  <TagIcon className="h-6 w-6 text-gray-600" />
                 </div>
               )}
               <div className="flex gap-1 flex-col">
@@ -154,7 +156,7 @@ export function CategoriesPage() {
           ) : categories.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="rounded-full bg-gray-100 p-6 mb-4">
-                <Tag className="h-12 w-12 text-gray-400" />
+                <TagIcon className="h-12 w-12 text-gray-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Nenhuma categoria cadastrada
@@ -166,7 +168,7 @@ export function CategoriesPage() {
                 onClick={() => setOpenDialog(true)}
                 className="bg-[#1D7A5E] hover:bg-[#166149]"
               >
-                <Plus className="mr-2 h-4 w-4" />
+                <PlusIcon className="mr-2 h-4 w-4" />
                 Criar primeira categoria
               </Button>
             </div>

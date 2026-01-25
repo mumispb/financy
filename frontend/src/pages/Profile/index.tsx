@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useAuthStore } from "@/stores/auth"
-import { LogOut } from "lucide-react"
+import LogOutIcon from "@/assets/icons/log-out.svg?react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
@@ -113,7 +113,7 @@ export function ProfilePage() {
               variant="outline"
               className="w-full hover:bg-red-50"
             >
-              <LogOut className="w-4 h-4 text-red-600" />
+              <LogOutIcon className="w-4 h-4 text-red-600" />
               Sair da conta
             </Button>
           </div>
