@@ -7,6 +7,7 @@ import {
 } from 'type-graphql'
 import { CategoryModel } from '../models/category.model'
 import { CreateCategoryInput, UpdateCategoryInput } from '../dtos/input/category.input'
+import { CategoryStatsModel } from '../dtos/output/category-stats.output'
 import { CategoryService } from '../services/category.service'
 import { GqlUser } from '../graphql/decorators/user.decorator'
 import { IsAuth } from '../middlewares/auth.middleware'
@@ -54,5 +55,10 @@ export class CategoryResolver {
     @GqlUser() user: UserModel
   ): Promise<CategoryModel> {
     return this.categoryService.getCategory(id, user.id)
+  }
+
+  @Query(() => [CategoryStatsModel])
+  async getCategoryStats(@GqlUser() user: UserModel): Promise<CategoryStatsModel[]> {
+    return this.categoryService.getCategoryStats(user.id)
   }
 }

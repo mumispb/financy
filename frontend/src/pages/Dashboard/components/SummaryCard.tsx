@@ -1,10 +1,10 @@
 import { Card } from "@/components/ui/card"
-import { LucideIcon } from "lucide-react"
+import { ReactComponentElement } from "react"
 
 interface SummaryCardProps {
   title: string
   value: number
-  icon: LucideIcon
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   iconColor?: string
 }
 
@@ -17,15 +17,15 @@ export function SummaryCard({ title, value, icon: Icon, iconColor = "text-purple
   }
 
   return (
-    <Card className="p-6">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="text-2xl font-bold">{formatCurrency(value)}</p>
+    <Card className="p-[25px] bg-white border border-gray-200">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-3">
+          <div className={`${iconColor} shrink-0`}>
+            <Icon className="h-5 w-5" />
+          </div>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-[0.6px]">{title}</p>
         </div>
-        <div className={`${iconColor}`}>
-          <Icon className="h-8 w-8" />
-        </div>
+        <p className="text-[28px] font-bold text-gray-900 leading-[32px]">{formatCurrency(value)}</p>
       </div>
     </Card>
   )

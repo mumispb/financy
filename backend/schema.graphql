@@ -14,6 +14,12 @@ type CategoryModel {
   userId: String!
 }
 
+type CategoryStatsModel {
+  category: CategoryModel!
+  itemCount: Int!
+  totalAmount: Float!
+}
+
 input CreateCategoryInput {
   color: String
   description: String
@@ -81,6 +87,7 @@ type PaginationMetadata {
 
 type Query {
   getCategory(id: String!): CategoryModel!
+  getCategoryStats: [CategoryStatsModel!]!
   getTransaction(id: String!): TransactionModel!
   getUser(id: String!): UserModel!
   listCategories: [CategoryModel!]!

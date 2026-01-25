@@ -29,3 +29,22 @@ export const GET_CATEGORY = gql`
     }
   }
 `
+
+export const GET_CATEGORY_STATS = gql`
+  query GetCategoryStats {
+    getCategoryStats {
+      category {
+        id
+        name
+        description
+        icon
+        color
+        userId
+        createdAt
+        updatedAt
+      }
+      itemCount
+      totalAmount
+    }
+  }
+`

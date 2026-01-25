@@ -1,13 +1,12 @@
-import { Transaction } from "@/types"
+import { Transaction, Category } from "@/types"
 import { TransactionItem } from "./TransactionItem"
 
 interface TransactionListProps {
   transactions: Transaction[]
-  onEdit: (transaction: Transaction) => void
-  onDelete: (id: string) => void
+  categoryMap: Record<string, Category>
 }
 
-export function TransactionList({ transactions, onEdit, onDelete }: TransactionListProps) {
+export function TransactionList({ transactions, categoryMap }: TransactionListProps) {
   if (transactions.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -18,13 +17,13 @@ export function TransactionList({ transactions, onEdit, onDelete }: TransactionL
   }
 
   return (
-    <div className="space-y-3">
-      {transactions.map((transaction) => (
+    <div className="w-full">
+      {transactions.map((transaction, index) => (
         <TransactionItem
           key={transaction.id}
           transaction={transaction}
-          onEdit={onEdit}
-          onDelete={onDelete}
+          category={transaction.categoryId ? categoryMap[transaction.categoryId] : null}
+          isLast={index === transactions.length - 1}
         />
       ))}
     </div>

@@ -75,4 +75,41 @@ export class CategoryService {
       },
     })
   }
+
+  async getCategoryStats(userId: string) {
+    const categories = await prismaClient.category.findMany({
+      where: {
+        userId,
+      },
+    })
+
+    const transactions = await prismaClient.transaction.findMany({
+      where: {
+        userId,
+        categoryId: {
+          not: null,
+        },
+      },
+    })
+
+    const stats = categories.map((category) => {
+      const categoryTransactions = transactions.filter(
+        (t) => t.categoryId === category.id
+      )
+      const itemCount = categoryTransactions.length
+      const totalAmount = categoryTransactions.reduce((sum, t) => sum + t.amount, 0)
+
+      return {
+        category,
+        itemCount,
+        totalAmount,
+      }
+    })
+
+    // Filter out categories with no transactions and sort by total amount descending
+    return stats
+      .filter((stat) => stat.itemCount > 0)
+      .sort((a, b) => b.totalAmount - a.totalAmount)
+      .slice(0, 5) // Return top 5 categories
+  }
 }
