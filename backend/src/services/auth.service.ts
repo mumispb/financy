@@ -2,7 +2,7 @@ import { UserModel } from '../models/user.model'
 import { prismaClient } from '../../prisma/prisma'
 import { LoginInput, RegisterInput } from '../dtos/input/auth.input'
 import { comparePassword, hashPassword } from '../utils/hash'
-import { signJwt } from '../utils/jwt'
+import { signJwt, verifyJwt } from '../utils/jwt'
 
 export class AuthService {
   async login(data: LoginInput) {
@@ -39,7 +39,20 @@ export class AuthService {
 
   gerenerateTokens(user: UserModel) {
     const token = signJwt({ id: user.id, email: user.email }, '1d')
-    const refreshToken = signJwt({ id: user.id, email: user.email }, '1d')
+    const refreshToken = signJwt({ id: user.id, email: user.email }, '7d')
     return { token, refreshToken, user }
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const payload = verifyJwt(refreshToken) as { id: string; email: string }
+      const user = await prismaClient.user.findUnique({
+        where: { id: payload.id },
+      })
+      if (!user) throw new Error('Usuário não encontrado!')
+      return this.gerenerateTokens(user)
+    } catch (error) {
+      throw new Error('Token de atualização inválido!')
+    }
   }
 }
