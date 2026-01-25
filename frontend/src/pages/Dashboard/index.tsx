@@ -1,6 +1,6 @@
 import { Page } from "@/components/Page"
 import { Button } from "@/components/ui/button"
-import { AddTransactionDialog } from "./components/AddTransactionDialog"
+import { TransactionDialog } from "@/pages/Transactions/components/TransactionDialog"
 import { useState } from "react"
 import { useQuery } from "@apollo/client/react"
 import { LIST_TRANSACTIONS } from "@/lib/graphql/queries/Transaction"
@@ -159,10 +159,11 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <AddTransactionDialog
+      <TransactionDialog
         open={openDialog}
         onOpenChange={setOpenDialog}
-        onCreated={() => refetch()}
+        onSaved={() => refetch()}
+        editingTransaction={null}
       />
     </Page>
   )

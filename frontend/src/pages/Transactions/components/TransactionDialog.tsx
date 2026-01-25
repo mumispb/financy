@@ -14,7 +14,8 @@ import { CREATE_TRANSACTION, UPDATE_TRANSACTION } from "@/lib/graphql/mutations/
 import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
 import { Transaction, TransactionType, CreateTransactionInput, UpdateTransactionInput, Category } from "@/types"
 import { toast } from "sonner"
-import { ArrowDown, ArrowUp } from "lucide-react"
+import DownloadIcon from "@/assets/icons/download.svg?react"
+import UploadIcon from "@/assets/icons/upload.svg?react"
 
 interface TransactionDialogProps {
   open: boolean
@@ -59,7 +60,9 @@ export function TransactionDialog({ open, onOpenChange, onSaved, editingTransact
   useEffect(() => {
     if (open && editingTransaction) {
       setDescription(editingTransaction.description)
-      setAmount(formatAmountForDisplay(editingTransaction.amount))
+      // Format amount for bank-style display
+      const cents = Math.round(editingTransaction.amount * 100)
+      setAmount((cents / 100).toFixed(2).replace('.', ','))
       setType(editingTransaction.type)
       setDate(new Date(editingTransaction.date).toISOString().split('T')[0])
       setCategoryId(editingTransaction.categoryId || "")
@@ -72,30 +75,49 @@ export function TransactionDialog({ open, onOpenChange, onSaved, editingTransact
     }
   }, [open, editingTransaction])
 
-  // Format amount for display (R$ format)
-  const formatAmountForDisplay = (value: number | string): string => {
-    const numValue = typeof value === 'string' ? parseFloat(value) : value
-    if (isNaN(numValue)) return ""
-    return numValue.toFixed(2).replace('.', ',')
-  }
 
-  // Parse amount from display format to number
-  const parseAmountFromDisplay = (value: string): number => {
-    const cleanValue = value.replace(/[^\d,]/g, '').replace(',', '.')
-    return parseFloat(cleanValue) || 0
-  }
-
-  // Handle amount input change
+  // Handle amount input change (bank-style: only numbers, auto-format)
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    // Allow only numbers and comma
-    const cleaned = value.replace(/[^\d,]/g, '')
-    // Ensure only one comma
-    const parts = cleaned.split(',')
-    if (parts.length > 2) return
-    // Limit decimal places to 2
-    if (parts[1] && parts[1].length > 2) return
-    setAmount(cleaned)
+    // Allow only numbers
+    const cleaned = value.replace(/[^\d]/g, '')
+    
+    if (!cleaned) {
+      setAmount("")
+      return
+    }
+
+    // Convert to number (from cents) and format for display
+    const numValue = parseFloat(cleaned) / 100
+    const formatted = numValue.toFixed(2).replace('.', ',')
+    setAmount(formatted)
+  }
+
+  // Handle backspace - remove last digit or reset if all selected
+  const handleAmountKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && amount) {
+      const target = e.target as HTMLInputElement
+      const isAllSelected = target.selectionStart === 0 && target.selectionEnd === target.value.length
+      
+      if (isAllSelected) {
+        // If all text is selected, reset the field
+        e.preventDefault()
+        setAmount("")
+        return
+      }
+      
+      e.preventDefault()
+      // Remove last character, then re-format
+      const cleaned = amount.replace(/[^\d]/g, '')
+      if (cleaned.length > 1) {
+        const newCleaned = cleaned.slice(0, -1)
+        const numValue = parseFloat(newCleaned) / 100
+        const formatted = numValue.toFixed(2).replace('.', ',')
+        setAmount(formatted)
+      } else {
+        setAmount("")
+      }
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,7 +128,10 @@ export function TransactionDialog({ open, onOpenChange, onSaved, editingTransact
       return
     }
 
-    const parsedAmount = parseAmountFromDisplay(amount)
+    // Parse amount - remove comma and convert from formatted string
+    const cleaned = amount.replace(/[^\d]/g, '')
+    const parsedAmount = cleaned ? parseFloat(cleaned) / 100 : 0
+    
     if (!amount || parsedAmount <= 0) {
       toast.error("O valor deve ser maior que zero")
       return
@@ -165,34 +190,40 @@ export function TransactionDialog({ open, onOpenChange, onSaved, editingTransact
 
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
           {/* Type Toggle Buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-0 border-2 border-gray-300 rounded-lg p-1">
             <button
               type="button"
               onClick={() => setType(TransactionType.expense)}
               className={`
-                flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-lg border-2 transition-all
+                flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-md transition-all relative
                 ${type === TransactionType.expense 
-                  ? 'border-red-500 bg-red-50 text-red-700' 
-                  : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                  ? 'bg-white text-gray-700' 
+                  : 'bg-transparent hover:bg-gray-50'
                 }
               `}
             >
-              <ArrowDown className="h-5 w-5" />
-              <span className="font-medium text-lg">Despesa</span>
+              {type === TransactionType.expense && (
+                <div className="absolute inset-0 rounded-md border-2 border-red-500 pointer-events-none" />
+              )}
+              <DownloadIcon className={`h-5 w-5 ${type === TransactionType.expense ? 'text-red-600' : 'text-gray-400'}`} />
+              <span className={`font-medium text-lg ${type === TransactionType.expense ? 'text-gray-700' : 'text-gray-600'}`}>Despesa</span>
             </button>
             <button
               type="button"
               onClick={() => setType(TransactionType.income)}
               className={`
-                flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-lg border-2 transition-all
+                flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-md transition-all relative
                 ${type === TransactionType.income 
-                  ? 'border-gray-400 bg-gray-100 text-gray-700' 
-                  : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                  ? 'bg-white text-gray-700' 
+                  : 'bg-transparent hover:bg-gray-50'
                 }
               `}
             >
-              <ArrowUp className="h-5 w-5" />
-              <span className="font-medium text-lg">Receita</span>
+              {type === TransactionType.income && (
+                <div className="absolute inset-0 rounded-md border-2 border-green-500 pointer-events-none" />
+              )}
+              <UploadIcon className={`h-5 w-5 ${type === TransactionType.income ? 'text-green-600' : 'text-gray-400'}`} />
+              <span className={`font-medium text-lg ${type === TransactionType.income ? 'text-gray-700' : 'text-gray-600'}`}>Receita</span>
             </button>
           </div>
 
@@ -228,7 +259,7 @@ export function TransactionDialog({ open, onOpenChange, onSaved, editingTransact
             <div className="space-y-2">
               <Label htmlFor="amount" className="text-base font-normal text-gray-700">Valor</Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-base">
+                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-base">
                   R$
                 </span>
                 <Input
@@ -236,9 +267,11 @@ export function TransactionDialog({ open, onOpenChange, onSaved, editingTransact
                   type="text"
                   value={amount}
                   onChange={handleAmountChange}
+                  onKeyDown={handleAmountKeyDown}
                   placeholder="0,00"
                   required
-                  className="h-12 pl-12 text-base"
+                  className="h-12 pl-10 text-base placeholder:text-gray-600"
+                  inputMode="numeric"
                 />
               </div>
             </div>
