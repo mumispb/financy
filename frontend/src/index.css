@@ -81,3 +81,26 @@
     @apply bg-background text-foreground font-sans;
   }
 }
+
+@layer utilities {
+
+  /* Label turns green when associated input/select is focused */
+  .input-group:has(input:focus-visible) label,
+  .input-group:has(input:focus) label,
+  .input-group:has(select:focus-visible) label,
+  .input-group:has(select:focus) label {
+    color: #1D7A5E;
+  }
+
+  /* Icon turns green when associated input is focused */
+  .input-group:has(input:focus-visible) svg,
+  .input-group:has(input:focus) svg {
+    color: #1D7A5E;
+  }
+
+  /* Text prefix (like "R$") turns green when associated input is focused */
+  .input-group:has(input:focus-visible) .relative span,
+  .input-group:has(input:focus) .relative span {
+    color: #1D7A5E;
+  }
+}
