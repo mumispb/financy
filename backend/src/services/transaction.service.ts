@@ -50,10 +50,12 @@ export class TransactionService {
     }
 
     // Add search filter
+    // Note: SQLite doesn't support case-insensitive mode in Prisma
+    // For case-insensitive search, we use contains which will be case-sensitive
+    // If case-insensitive search is needed, consider using raw SQL with COLLATE NOCASE
     if (search) {
       where.description = {
         contains: search,
-        mode: 'insensitive',
       }
     }
 

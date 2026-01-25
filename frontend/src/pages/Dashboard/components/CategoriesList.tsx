@@ -3,11 +3,40 @@ import { Link } from "react-router-dom"
 import { useQuery } from "@apollo/client/react"
 import { GET_CATEGORY_STATS } from "@/lib/graphql/queries/Category"
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg?react"
+import { ReactNode } from "react"
 
 interface CategoryStats {
   category: Category
   itemCount: number
   totalAmount: number
+}
+
+function CategoriesListHeader() {
+  return (
+    <div className="border-b border-gray-200 px-6 py-5">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xs font-medium text-gray-500 uppercase tracking-[0.6px]">
+          Categorias
+        </h2>
+        <Link
+          to="/categories"
+          className="flex items-center gap-1 text-sm font-medium text-[#1f6f43] hover:opacity-80 transition-opacity"
+        >
+          Gerenciar
+          <ChevronRightIcon className="h-5 w-5" />
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+function CategoriesListContainer({ children }: { children: ReactNode }) {
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      <CategoriesListHeader />
+      {children}
+    </div>
+  )
 }
 
 export function CategoriesList() {
@@ -24,21 +53,7 @@ export function CategoriesList() {
 
   if (loading) {
     return (
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-        <div className="border-b border-gray-200 px-6 py-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-medium text-gray-500 uppercase tracking-[0.6px]">
-              Categorias
-            </h2>
-            <Link
-              to="/categories"
-              className="flex items-center gap-1 text-sm font-medium text-[#1f6f43] hover:opacity-80 transition-opacity"
-            >
-              Gerenciar
-              <ChevronRightIcon className="h-5 w-5" />
-            </Link>
-          </div>
-        </div>
+      <CategoriesListContainer>
         <div className="px-6 py-6">
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -49,50 +64,22 @@ export function CategoriesList() {
             ))}
           </div>
         </div>
-      </div>
+      </CategoriesListContainer>
     )
   }
 
   if (categoryStats.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-        <div className="border-b border-gray-200 px-6 py-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-medium text-gray-500 uppercase tracking-[0.6px]">
-              Categorias
-            </h2>
-            <Link
-              to="/categories"
-              className="flex items-center gap-1 text-sm font-medium text-[#1f6f43] hover:opacity-80 transition-opacity"
-            >
-              Gerenciar
-              <ChevronRightIcon className="h-5 w-5" />
-            </Link>
-          </div>
-        </div>
+      <CategoriesListContainer>
         <div className="px-6 py-8 text-center text-gray-500">
           <p>Nenhuma categoria com transações encontrada.</p>
         </div>
-      </div>
+      </CategoriesListContainer>
     )
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-      <div className="border-b border-gray-200 px-6 py-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xs font-medium text-gray-500 uppercase tracking-[0.6px]">
-            Categorias
-          </h2>
-            <Link
-              to="/categories"
-              className="flex items-center gap-1 text-sm font-medium text-[#1f6f43] hover:opacity-80 transition-opacity"
-            >
-              Gerenciar
-              <ChevronRightIcon className="h-5 w-5" />
-            </Link>
-        </div>
-      </div>
+    <CategoriesListContainer>
       <div className="px-6 py-6 flex flex-col gap-5">
         {categoryStats.map(({ category, itemCount, totalAmount }) => {
           const categoryColor = category.color || '#6b7280'
@@ -122,6 +109,6 @@ export function CategoriesList() {
           )
         })}
       </div>
-    </div>
+    </CategoriesListContainer>
   )
 }

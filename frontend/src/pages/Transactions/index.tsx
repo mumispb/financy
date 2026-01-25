@@ -6,6 +6,7 @@ import { TransactionDialog } from "./components/TransactionDialog"
 import { TransactionFilters, TransactionFiltersState } from "./components/TransactionFilters"
 import { useState, useEffect } from "react"
 import { useQuery, useMutation } from "@apollo/client/react"
+import { useDebounce } from "@/hooks/useDebounce"
 import { LIST_TRANSACTIONS_PAGINATED } from "@/lib/graphql/queries/Transaction"
 import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
 import { DELETE_TRANSACTION } from "@/lib/graphql/mutations/Transaction"
@@ -52,19 +53,22 @@ export function TransactionsPage() {
     year: currentDate.getFullYear(),
   })
   
+  // Debounce search input - update after 500ms of no typing
+  const debouncedSearch = useDebounce(filters.search, 500)
+  
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
   // Fetch categories for filters
   const { data: categoriesData } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES)
   
-  // Fetch paginated transactions
+  // Fetch paginated transactions - use debouncedSearch instead of filters.search
   const { data: transactionsData, loading: transactionsLoading, refetch: refetchTransactions } = useQuery<{
     listTransactionsPaginated: PaginatedTransactionsResponse
   }>(LIST_TRANSACTIONS_PAGINATED, {
     variables: {
       filters: {
-        search: filters.search || undefined,
+        search: debouncedSearch || undefined,
         type: filters.type || undefined,
         categoryId: filters.categoryId || undefined,
         month: filters.month,
@@ -88,10 +92,10 @@ export function TransactionsPage() {
     return acc
   }, {} as Record<string, Category>)
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when filters change (excluding search, which is handled separately)
   useEffect(() => {
     setCurrentPage(1)
-  }, [filters])
+  }, [filters.type, filters.categoryId, filters.month, filters.year, debouncedSearch])
 
   const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction)
