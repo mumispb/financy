@@ -1,10 +1,33 @@
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { persist, createJSONStorage } from "zustand/middleware"
 import { apolloClient } from "@/lib/graphql/apollo"
 import type { User ,RegisterInput, LoginInput} from '@/types'
 import { REGISTER } from '@/lib/graphql/mutations/Register'
 import { LOGIN } from '../lib/graphql/mutations/Login'
 import { REFRESH_TOKEN } from '../lib/graphql/mutations/RefreshToken'
+
+const AUTH_REMEMBER_KEY = 'auth-remember-me'
+
+/** Custom storage: uses localStorage when rememberMe, sessionStorage otherwise. Flag stored in localStorage. */
+const authStorage = {
+  getItem: (name: string) => {
+    const rememberMe = localStorage.getItem(AUTH_REMEMBER_KEY)
+    const storage = rememberMe === 'true' ? localStorage : sessionStorage
+    const value = storage.getItem(name)
+    if (value) return value
+    if (rememberMe === null) return localStorage.getItem(name)
+    return null
+  },
+  setItem: (name: string, value: string) => {
+    const rememberMe = localStorage.getItem(AUTH_REMEMBER_KEY)
+    const storage = rememberMe === 'true' ? localStorage : sessionStorage
+    storage.setItem(name, value)
+  },
+  removeItem: (name: string) => {
+    localStorage.removeItem(name)
+    sessionStorage.removeItem(name)
+  },
+}
 
 type RegisterMutationData = {
   register: {
@@ -51,7 +74,7 @@ export const useAuthStore = create<AuthState>() (
         isAuthenticated: false,
         login: async (loginData: LoginInput) => {
           try{
-              const {data} = await apolloClient.mutate<LoginMutationData, { data: LoginInput }>({
+              const {data} = await apolloClient.mutate<LoginMutationData, { data: { email: string; password: string } }>({
                 mutation: LOGIN,
                 variables: {
                   data: {
@@ -62,6 +85,7 @@ export const useAuthStore = create<AuthState>() (
               })
 
               if(data?.login){
+                localStorage.setItem(AUTH_REMEMBER_KEY, loginData.rememberMe ? 'true' : 'false')
                 const { user, token, refreshToken } = data.login
                 set({
                   user: {
@@ -100,6 +124,7 @@ export const useAuthStore = create<AuthState>() (
                 }
               })
               if(data?.register){
+                localStorage.setItem(AUTH_REMEMBER_KEY, 'true')
                 const { token, refreshToken, user } = data.register
                 set({
                   user: {
@@ -170,6 +195,7 @@ export const useAuthStore = create<AuthState>() (
             refreshToken: null,
             isAuthenticated: false
           })
+          authStorage.removeItem('auth-storage')
           apolloClient.clearStore()
         },
         updateUser: (name: string) => {
@@ -179,7 +205,14 @@ export const useAuthStore = create<AuthState>() (
         },
       }),
       {
-        name: 'auth-storage'
+        name: 'auth-storage',
+        storage: createJSONStorage(() => authStorage),
+        partialize: (state) => ({
+          user: state.user,
+          token: state.token,
+          refreshToken: state.refreshToken,
+          isAuthenticated: state.isAuthenticated,
+        }),
       }
     )
 )

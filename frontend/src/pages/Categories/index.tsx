@@ -23,8 +23,12 @@ export function CategoriesPage() {
   const [openDialog, setOpenDialog] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   
-  const { data: categoriesData, loading: categoriesLoading, refetch: refetchCategories } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES)
-  const { data: transactionsData } = useQuery<{ listTransactions: Transaction[] }>(LIST_TRANSACTIONS)
+  const { data: categoriesData, loading: categoriesLoading, refetch: refetchCategories } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES, {
+    fetchPolicy: "network-only",
+  })
+  const { data: transactionsData } = useQuery<{ listTransactions: Transaction[] }>(LIST_TRANSACTIONS, {
+    fetchPolicy: "network-only",
+  })
   const [deleteCategory] = useMutation(DELETE_CATEGORY)
 
   const categories = categoriesData?.listCategories || []
@@ -145,13 +149,8 @@ export function CategoriesPage() {
         {/* Categories Grid */}
         <div className="space-y-5">
           {categoriesLoading ? (
-            <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(284px, 1fr))' }}>
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div
-                  key={`category-skeleton-${i}`}
-                  className="h-48 rounded-lg border border-dashed border-muted-foreground/30 animate-pulse min-w-[284px]"
-                />
-              ))}
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-pulse text-gray-500">Carregando...</div>
             </div>
           ) : categories.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">

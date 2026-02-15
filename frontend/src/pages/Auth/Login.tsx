@@ -30,6 +30,7 @@ export function Login() {
       const loginMutate = await login({
         email,
         password,
+        rememberMe,
       })
       if (loginMutate) {
         toast.success("Login realizado com sucesso!")
@@ -101,7 +102,7 @@ export function Login() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 transition-opacity hover:opacity-70"
                 >
-                  {showPassword ? (
+                  {!showPassword ? (
                     <EyeOffIcon className="h-4 w-4 text-gray-700" />
                   ) : (
                     <EyeIcon className="h-4 w-4 text-gray-700" />

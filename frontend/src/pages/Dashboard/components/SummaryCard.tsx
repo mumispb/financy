@@ -1,14 +1,14 @@
 import { Card } from "@/components/ui/card"
-import { ReactComponentElement } from "react"
 
 interface SummaryCardProps {
   title: string
   value: number
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   iconColor?: string
+  loading?: boolean
 }
 
-export function SummaryCard({ title, value, icon: Icon, iconColor = "text-purple-600" }: SummaryCardProps) {
+export function SummaryCard({ title, value, icon: Icon, iconColor = "text-purple-600", loading = false }: SummaryCardProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -25,7 +25,13 @@ export function SummaryCard({ title, value, icon: Icon, iconColor = "text-purple
           </div>
           <p className="text-xs font-medium text-gray-500 uppercase tracking-[0.6px]">{title}</p>
         </div>
-        <p className="text-[28px] font-bold text-gray-900 leading-[32px]">{formatCurrency(value)}</p>
+        {loading ? (
+          <p className="text-[28px] font-bold text-gray-900 leading-[32px]">
+            <span className="animate-pulse text-gray-500">Carregando...</span>
+          </p>
+        ) : (
+          <p className="text-[28px] font-bold text-gray-900 leading-[32px]">{formatCurrency(value)}</p>
+        )}
       </div>
     </Card>
   )

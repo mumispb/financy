@@ -40,7 +40,9 @@ function CategoriesListContainer({ children }: { children: ReactNode }) {
 }
 
 export function CategoriesList() {
-  const { data, loading } = useQuery<{ getCategoryStats: CategoryStats[] }>(GET_CATEGORY_STATS)
+  const { data, loading } = useQuery<{ getCategoryStats: CategoryStats[] }>(GET_CATEGORY_STATS, {
+    fetchPolicy: "network-only",
+  })
   
   const categoryStats = data?.getCategoryStats || []
 
@@ -54,15 +56,8 @@ export function CategoriesList() {
   if (loading) {
     return (
       <CategoriesListContainer>
-        <div className="px-6 py-6">
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={`category-skeleton-${i}`}
-                className="h-8 rounded animate-pulse bg-gray-100"
-              />
-            ))}
-          </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-pulse text-gray-500">Carregando...</div>
         </div>
       </CategoriesListContainer>
     )

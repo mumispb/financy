@@ -18,6 +18,8 @@ export interface RegisterInput {
 export interface LoginInput {
   email: string
   password: string
+  /** When true, persists auth to localStorage (stay logged in). When false, uses sessionStorage (log out when tab closes). */
+  rememberMe?: boolean
 }
 
 export interface UpdateUserInput {

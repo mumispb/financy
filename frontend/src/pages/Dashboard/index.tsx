@@ -18,8 +18,12 @@ import PlusIcon from "@/assets/icons/plus.svg?react"
 
 export function DashboardPage() {
   const [openDialog, setOpenDialog] = useState(false)
-  const { data, loading, refetch } = useQuery<{ listTransactions: Transaction[] }>(LIST_TRANSACTIONS)
-  const { data: categoriesData } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES)
+  const { data, loading, refetch } = useQuery<{ listTransactions: Transaction[] }>(LIST_TRANSACTIONS, {
+    fetchPolicy: "network-only",
+  })
+  const { data: categoriesData } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES, {
+    fetchPolicy: "network-only",
+  })
 
   const transactions = data?.listTransactions || []
   const categories = categoriesData?.listCategories || []
@@ -84,6 +88,7 @@ export function DashboardPage() {
             value={balance}
             icon={WalletIcon}
             iconColor="text-purple-600"
+            loading={loading}
           />
         </div>
         <div className="col-span-1">
@@ -92,6 +97,7 @@ export function DashboardPage() {
             value={monthlyIncome}
             icon={UploadIcon}
             iconColor="text-green-600"
+            loading={loading}
           />
         </div>
         <div className="col-span-1">
@@ -100,6 +106,7 @@ export function DashboardPage() {
             value={monthlyExpenses}
             icon={DownloadIcon}
             iconColor="text-red-600"
+            loading={loading}
           />
         </div>
 
@@ -124,13 +131,8 @@ export function DashboardPage() {
           {/* Body */}
           <div className="w-full">
             {loading ? (
-              <div className="space-y-0">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div
-                    key={`transaction-skeleton-${i}`}
-                    className="h-20 border-b border-gray-200 border-dashed animate-pulse bg-gray-50"
-                  />
-                ))}
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-pulse text-gray-500">Carregando...</div>
               </div>
             ) : (
               <TransactionList
