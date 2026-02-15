@@ -1,82 +1,92 @@
-import { Page } from "@/components/Page"
-import { Button } from "@/components/ui/button"
-import { TransactionDialog } from "@/pages/Transactions/components/TransactionDialog"
-import { useState } from "react"
-import { useQuery } from "@apollo/client/react"
-import { LIST_TRANSACTIONS } from "@/lib/graphql/queries/Transaction"
-import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
-import { Transaction, TransactionType, Category } from "@/types"
-import { SummaryCard } from "./components/SummaryCard"
-import { TransactionList } from "./components/TransactionList"
-import { CategoriesList } from "./components/CategoriesList"
-import { Link } from "react-router-dom"
-import WalletIcon from "@/assets/icons/wallet.svg?react"
-import UploadIcon from "@/assets/icons/upload.svg?react"
-import DownloadIcon from "@/assets/icons/download.svg?react"
-import ChevronRightIcon from "@/assets/icons/chevron-right.svg?react"
-import PlusIcon from "@/assets/icons/plus.svg?react"
+import { Page } from "@/components/Page";
+import { Button } from "@/components/ui/button";
+import { TransactionDialog } from "@/pages/Transactions/components/TransactionDialog";
+import { useState } from "react";
+import { useQuery } from "@apollo/client/react";
+import { LIST_TRANSACTIONS } from "@/lib/graphql/queries/Transaction";
+import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category";
+import { Transaction, TransactionType, Category } from "@/types";
+import { SummaryCard } from "./components/SummaryCard";
+import { TransactionList } from "./components/TransactionList";
+import { CategoriesList } from "./components/CategoriesList";
+import { Link } from "react-router-dom";
+import WalletIcon from "@/assets/icons/wallet.svg?react";
+import UploadIcon from "@/assets/icons/upload.svg?react";
+import DownloadIcon from "@/assets/icons/download.svg?react";
+import ChevronRightIcon from "@/assets/icons/chevron-right.svg?react";
+import PlusIcon from "@/assets/icons/plus.svg?react";
 
 export function DashboardPage() {
-  const [openDialog, setOpenDialog] = useState(false)
-  const { data, loading, refetch } = useQuery<{ listTransactions: Transaction[] }>(LIST_TRANSACTIONS, {
+  const [openDialog, setOpenDialog] = useState(false);
+  const { data, loading, refetch } = useQuery<{
+    listTransactions: Transaction[];
+  }>(LIST_TRANSACTIONS, {
     fetchPolicy: "network-only",
-  })
-  const { data: categoriesData } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES, {
-    fetchPolicy: "network-only",
-  })
+  });
+  const { data: categoriesData } = useQuery<{ listCategories: Category[] }>(
+    LIST_CATEGORIES,
+    {
+      fetchPolicy: "network-only",
+    },
+  );
 
-  const transactions = data?.listTransactions || []
-  const categories = categoriesData?.listCategories || []
+  const transactions = data?.listTransactions || [];
+  const categories = categoriesData?.listCategories || [];
 
   // Create category map for quick lookup
-  const categoryMap = categories.reduce((acc, category) => {
-    acc[category.id] = category
-    return acc
-  }, {} as Record<string, Category>)
+  const categoryMap = categories.reduce(
+    (acc, category) => {
+      acc[category.id] = category;
+      return acc;
+    },
+    {} as Record<string, Category>,
+  );
 
   // Get current month and year
-  const now = new Date()
-  const currentMonth = now.getMonth()
-  const currentYear = now.getFullYear()
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
 
-  // Calculate monthly financial summary
+  // Calculate monthly financial summary - date is YYYY-MM-DD, extract [year, month]
   const monthlyIncome = transactions
     .filter((t) => {
-      const transactionDate = new Date(t.date)
+      const dateStr = t.date.slice(0, 10);
+      const [y, m] = dateStr.split("-").map(Number);
       return (
         t.type === TransactionType.income &&
-        transactionDate.getMonth() === currentMonth &&
-        transactionDate.getFullYear() === currentYear
-      )
+        y === currentYear &&
+        m === currentMonth + 1
+      );
     })
-    .reduce((sum, t) => sum + t.amount, 0)
+    .reduce((sum, t) => sum + t.amount, 0);
 
   const monthlyExpenses = transactions
     .filter((t) => {
-      const transactionDate = new Date(t.date)
+      const dateStr = t.date.slice(0, 10);
+      const [y, m] = dateStr.split("-").map(Number);
       return (
         t.type === TransactionType.expense &&
-        transactionDate.getMonth() === currentMonth &&
-        transactionDate.getFullYear() === currentYear
-      )
+        y === currentYear &&
+        m === currentMonth + 1
+      );
     })
-    .reduce((sum, t) => sum + t.amount, 0)
+    .reduce((sum, t) => sum + t.amount, 0);
 
   // Calculate total balance (all time)
   const totalIncome = transactions
     .filter((t) => t.type === TransactionType.income)
-    .reduce((sum, t) => sum + t.amount, 0)
+    .reduce((sum, t) => sum + t.amount, 0);
 
   const totalExpenses = transactions
     .filter((t) => t.type === TransactionType.expense)
-    .reduce((sum, t) => sum + t.amount, 0)
+    .reduce((sum, t) => sum + t.amount, 0);
 
-  const balance = totalIncome - totalExpenses
+  const balance = totalIncome - totalExpenses;
 
-  // Sort transactions by date (most recent first) and limit to 5
+  // Sort transactions by date (most recent first) - date is YYYY-MM-DD, string comparison works
   const sortedTransactions = [...transactions]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 5);
 
   return (
     <Page>
@@ -168,5 +178,5 @@ export function DashboardPage() {
         editingTransaction={null}
       />
     </Page>
-  )
+  );
 }

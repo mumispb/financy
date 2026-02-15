@@ -1,55 +1,54 @@
-import { useRef, useEffect, useState } from "react"
-import { Input } from "@/components/ui/input"
+import { useRef, useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 interface DateInputProps {
-  value: string // ISO date string (YYYY-MM-DD)
-  onChange: (isoDate: string) => void
-  id?: string
-  required?: boolean
-  className?: string
+  value: string; // ISO date string (YYYY-MM-DD)
+  onChange: (isoDate: string) => void;
+  id?: string;
+  required?: boolean;
+  className?: string;
 }
 
-export function DateInput({ 
-  value, 
-  onChange, 
+export function DateInput({
+  value,
+  onChange,
   id = "date",
   required = false,
-  className = ""
+  className = "",
 }: DateInputProps) {
-  const datePickerRef = useRef<HTMLInputElement>(null)
-  const textInputRef = useRef<HTMLInputElement>(null)
-  const [displayValue, setDisplayValue] = useState("")
+  const datePickerRef = useRef<HTMLInputElement>(null);
+  const textInputRef = useRef<HTMLInputElement>(null);
+  const [displayValue, setDisplayValue] = useState("");
 
-  // Format date for display using browser's locale
+  // Format date for display in Portuguese (dd/mm/yyyy)
   useEffect(() => {
     if (value) {
-      const date = new Date(value + 'T12:00:00')
-      // Use browser's locale to format the date
-      const formatted = date.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      })
-      setDisplayValue(formatted)
+      const date = new Date(value + "T12:00:00");
+      const formatted = date.toLocaleDateString("pt-BR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+      setDisplayValue(formatted);
     } else {
-      setDisplayValue("")
+      setDisplayValue("");
     }
-  }, [value])
+  }, [value]);
 
   const handleTextInputClick = (e: React.MouseEvent<HTMLInputElement>) => {
     // If clicking (not focusing from tab), open calendar
-    const target = e.target as HTMLInputElement
+    const target = e.target as HTMLInputElement;
     if (document.activeElement !== target) {
-      e.preventDefault()
+      e.preventDefault();
       if (datePickerRef.current) {
-        if (typeof datePickerRef.current.showPicker === 'function') {
-          datePickerRef.current.showPicker()
+        if (typeof datePickerRef.current.showPicker === "function") {
+          datePickerRef.current.showPicker();
         } else {
-          datePickerRef.current.click()
+          datePickerRef.current.click();
         }
       }
     }
-  }
+  };
 
   return (
     <div className="relative">
@@ -61,12 +60,12 @@ export function DateInput({
         readOnly
         onClick={handleTextInputClick}
         onFocus={(e) => {
-          e.target.blur() // Prevent keyboard from showing
+          e.target.blur(); // Prevent keyboard from showing
           if (datePickerRef.current) {
-            if (typeof datePickerRef.current.showPicker === 'function') {
-              datePickerRef.current.showPicker()
+            if (typeof datePickerRef.current.showPicker === "function") {
+              datePickerRef.current.showPicker();
             } else {
-              datePickerRef.current.click()
+              datePickerRef.current.click();
             }
           }
         }}
@@ -85,5 +84,5 @@ export function DateInput({
         aria-hidden="true"
       />
     </div>
-  )
+  );
 }

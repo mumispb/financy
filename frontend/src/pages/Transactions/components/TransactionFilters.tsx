@@ -1,69 +1,92 @@
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
-import SearchIcon from "@/assets/icons/search.svg?react"
-import { Category, TransactionType } from "@/types"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
+import SearchIcon from "@/assets/icons/search.svg?react";
+import { Category, TransactionType } from "@/types";
 
 export interface TransactionFiltersState {
-  search: string
-  type: string
-  categoryId: string
-  month: number
-  year: number
+  search: string;
+  type: string;
+  categoryId: string;
+  month: number;
+  year: number;
 }
 
 interface TransactionFiltersProps {
-  filters: TransactionFiltersState
-  onFiltersChange: (filters: TransactionFiltersState) => void
-  categories: Category[]
+  filters: TransactionFiltersState;
+  onFiltersChange: (filters: TransactionFiltersState) => void;
+  categories: Category[];
 }
 
-export function TransactionFilters({ filters, onFiltersChange, categories }: TransactionFiltersProps) {
+export function TransactionFilters({
+  filters,
+  onFiltersChange,
+  categories,
+}: TransactionFiltersProps) {
   const monthNames = [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-  ]
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+  ];
 
   // Generate last 12 months
   const generateLast12Months = () => {
-    const periods = []
-    const currentDate = new Date()
-    
-    for (let i = 0; i < 12; i++) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1)
-      const month = date.getMonth() + 1
-      const year = date.getFullYear()
-      const label = `${monthNames[date.getMonth()]} / ${year}`
-      periods.push({ month, year, label, value: `${month}-${year}` })
-    }
-    
-    return periods
-  }
+    const periods = [];
+    const currentDate = new Date();
 
-  const periods = generateLast12Months()
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - i,
+        1,
+      );
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const label = `${monthNames[date.getMonth()]} / ${year}`;
+      periods.push({ month, year, label, value: `${month}-${year}` });
+    }
+
+    return periods;
+  };
+
+  const periods = generateLast12Months();
 
   const handleSearchChange = (search: string) => {
-    onFiltersChange({ ...filters, search })
-  }
+    onFiltersChange({ ...filters, search });
+  };
 
   const handleTypeChange = (type: string) => {
-    onFiltersChange({ ...filters, type })
-  }
+    onFiltersChange({ ...filters, type });
+  };
 
   const handleCategoryChange = (categoryId: string) => {
-    onFiltersChange({ ...filters, categoryId })
-  }
+    onFiltersChange({ ...filters, categoryId });
+  };
 
   const handlePeriodChange = (value: string) => {
-    const [month, year] = value.split('-').map(Number)
-    onFiltersChange({ ...filters, month, year })
-  }
+    const [month, year] = value.split("-").map(Number);
+    onFiltersChange({ ...filters, month, year });
+  };
 
   return (
     <div className="grid gap-4 md:grid-cols-4 bg-white p-4 rounded-lg border">
       {/* Search */}
       <div className="space-y-2">
-        <Label htmlFor="search" className="text-xs text-gray-600 uppercase tracking-wide">Buscar</Label>
+        <Label
+          htmlFor="search"
+          className="text-xs text-gray-600 uppercase tracking-wide"
+        >
+          Buscar
+        </Label>
         <div className="relative">
           <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
@@ -78,13 +101,19 @@ export function TransactionFilters({ filters, onFiltersChange, categories }: Tra
 
       {/* Type */}
       <div className="space-y-2">
-        <Label htmlFor="type" className="text-xs text-gray-600 uppercase tracking-wide">Tipo</Label>
+        <Label
+          htmlFor="type"
+          className="text-xs text-gray-600 uppercase tracking-wide"
+        >
+          Tipo
+        </Label>
         <Select
           id="type"
           value={filters.type}
           onChange={(e) => handleTypeChange(e.target.value)}
+          placeholder="Todos"
         >
-          <option value="">Todos</option>
+          <option value="all">Todos</option>
           <option value={TransactionType.income}>Entrada</option>
           <option value={TransactionType.expense}>Saída</option>
         </Select>
@@ -92,13 +121,19 @@ export function TransactionFilters({ filters, onFiltersChange, categories }: Tra
 
       {/* Category */}
       <div className="space-y-2">
-        <Label htmlFor="category" className="text-xs text-gray-600 uppercase tracking-wide">Categoria</Label>
+        <Label
+          htmlFor="category"
+          className="text-xs text-gray-600 uppercase tracking-wide"
+        >
+          Categoria
+        </Label>
         <Select
           id="category"
           value={filters.categoryId}
           onChange={(e) => handleCategoryChange(e.target.value)}
+          placeholder="Todas"
         >
-          <option value="">Todas</option>
+          <option value="all">Todas</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -109,7 +144,12 @@ export function TransactionFilters({ filters, onFiltersChange, categories }: Tra
 
       {/* Period */}
       <div className="space-y-2">
-        <Label htmlFor="period" className="text-xs text-gray-600 uppercase tracking-wide">Período</Label>
+        <Label
+          htmlFor="period"
+          className="text-xs text-gray-600 uppercase tracking-wide"
+        >
+          Período
+        </Label>
         <Select
           id="period"
           value={`${filters.month}-${filters.year}`}
@@ -123,5 +163,5 @@ export function TransactionFilters({ filters, onFiltersChange, categories }: Tra
         </Select>
       </div>
     </div>
-  )
+  );
 }

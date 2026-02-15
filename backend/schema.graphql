@@ -30,7 +30,7 @@ input CreateCategoryInput {
 input CreateTransactionInput {
   amount: Float!
   categoryId: String
-  date: DateTimeISO
+  date: Date
   description: String!
   type: TransactionType!
 }
@@ -39,6 +39,9 @@ input CreateUserInput {
   email: String!
   name: String!
 }
+
+"""A date string in YYYY-MM-DD format (no time, no timezone)"""
+scalar Date
 
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
@@ -130,7 +133,7 @@ type TransactionModel {
   amount: Float!
   categoryId: String
   createdAt: DateTimeISO!
-  date: DateTimeISO!
+  date: Date!
   description: String!
   id: ID!
   type: TransactionType!
@@ -154,7 +157,7 @@ input UpdateCategoryInput {
 input UpdateTransactionInput {
   amount: Float
   categoryId: String
-  date: DateTimeISO
+  date: Date
   description: String
   type: TransactionType
 }

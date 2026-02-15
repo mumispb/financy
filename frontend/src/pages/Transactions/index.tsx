@@ -1,17 +1,20 @@
-import { Page } from "@/components/Page"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { TransactionDialog } from "./components/TransactionDialog"
-import { TransactionFilters, TransactionFiltersState } from "./components/TransactionFilters"
-import { useState, useEffect } from "react"
-import { useQuery, useMutation } from "@apollo/client/react"
-import { useDebounce } from "@/hooks/useDebounce"
-import { LIST_TRANSACTIONS_PAGINATED } from "@/lib/graphql/queries/Transaction"
-import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
-import { DELETE_TRANSACTION } from "@/lib/graphql/mutations/Transaction"
-import { Category, Transaction, TransactionType } from "@/types"
-import { toast } from "sonner"
-import { CATEGORY_ICON_MAP } from "@/constants/icons"
+import { Page } from "@/components/Page";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { TransactionDialog } from "./components/TransactionDialog";
+import {
+  TransactionFilters,
+  TransactionFiltersState,
+} from "./components/TransactionFilters";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@apollo/client/react";
+import { useDebounce } from "@/hooks/useDebounce";
+import { LIST_TRANSACTIONS_PAGINATED } from "@/lib/graphql/queries/Transaction";
+import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category";
+import { DELETE_TRANSACTION } from "@/lib/graphql/mutations/Transaction";
+import { Category, Transaction, TransactionType } from "@/types";
+import { toast } from "sonner";
+import { CATEGORY_ICON_MAP } from "@/constants/icons";
 import {
   Table,
   TableBody,
@@ -19,135 +22,156 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import EditIcon from "@/assets/icons/edit.svg?react"
-import TrashIcon from "@/assets/icons/trash.svg?react"
-import DownloadIcon from "@/assets/icons/download.svg?react"
-import UploadIcon from "@/assets/icons/upload.svg?react"
-import PlusIcon from "@/assets/icons/plus.svg?react"
-import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react"
-import ChevronRightIcon from "@/assets/icons/chevron-right.svg?react"
-import { IconButton } from "@/components/ui/icon-button"
+} from "@/components/ui/table";
+import EditIcon from "@/assets/icons/edit.svg?react";
+import TrashIcon from "@/assets/icons/trash.svg?react";
+import DownloadIcon from "@/assets/icons/download.svg?react";
+import UploadIcon from "@/assets/icons/upload.svg?react";
+import PlusIcon from "@/assets/icons/plus.svg?react";
+import ChevronLeftIcon from "@/assets/icons/chevron-left.svg?react";
+import ChevronRightIcon from "@/assets/icons/chevron-right.svg?react";
+import { IconButton } from "@/components/ui/icon-button";
 
 interface PaginationMetadata {
-  currentPage: number
-  totalPages: number
-  totalItems: number
-  itemsPerPage: number
-  hasNextPage: boolean
-  hasPreviousPage: boolean
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 }
 
 interface PaginatedTransactionsResponse {
-  transactions: Transaction[]
-  pagination: PaginationMetadata
+  transactions: Transaction[];
+  pagination: PaginationMetadata;
 }
 
 export function TransactionsPage() {
-  const currentDate = new Date()
-  const [openDialog, setOpenDialog] = useState(false)
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
-  
+  const currentDate = new Date();
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
+
   const [filters, setFilters] = useState<TransactionFiltersState>({
     search: "",
-    type: "",
-    categoryId: "",
+    type: "all",
+    categoryId: "all",
     month: currentDate.getMonth() + 1,
     year: currentDate.getFullYear(),
-  })
-  
+  });
+
   // Debounce search input - update after 500ms of no typing
-  const debouncedSearch = useDebounce(filters.search, 500)
-  
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const debouncedSearch = useDebounce(filters.search, 500);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Fetch categories for filters
-  const { data: categoriesData } = useQuery<{ listCategories: Category[] }>(LIST_CATEGORIES)
-  
+  const { data: categoriesData } = useQuery<{ listCategories: Category[] }>(
+    LIST_CATEGORIES,
+  );
+
   // Fetch paginated transactions - use debouncedSearch instead of filters.search
-  const { data: transactionsData, loading: transactionsLoading, refetch: refetchTransactions } = useQuery<{
-    listTransactionsPaginated: PaginatedTransactionsResponse
+  const {
+    data: transactionsData,
+    loading: transactionsLoading,
+    refetch: refetchTransactions,
+  } = useQuery<{
+    listTransactionsPaginated: PaginatedTransactionsResponse;
   }>(LIST_TRANSACTIONS_PAGINATED, {
     variables: {
       filters: {
         search: debouncedSearch || undefined,
-        type: filters.type || undefined,
-        categoryId: filters.categoryId || undefined,
+        type: filters.type === "all" ? undefined : filters.type,
+        categoryId:
+          filters.categoryId === "all" ? undefined : filters.categoryId,
         month: filters.month,
         year: filters.year,
         page: currentPage,
         limit: itemsPerPage,
-      }
+      },
     },
     fetchPolicy: "network-only",
-  })
-  
-  const [deleteTransaction] = useMutation(DELETE_TRANSACTION)
+  });
 
-  const categories = categoriesData?.listCategories || []
-  const transactions = transactionsData?.listTransactionsPaginated.transactions || []
-  const pagination = transactionsData?.listTransactionsPaginated.pagination
+  const [deleteTransaction] = useMutation(DELETE_TRANSACTION);
+
+  const categories = categoriesData?.listCategories || [];
+  const transactions =
+    transactionsData?.listTransactionsPaginated.transactions || [];
+  const pagination = transactionsData?.listTransactionsPaginated.pagination;
 
   // Create a map of category id to category for quick lookup
-  const categoryMap = categories.reduce((acc, category) => {
-    acc[category.id] = category
-    return acc
-  }, {} as Record<string, Category>)
+  const categoryMap = categories.reduce(
+    (acc, category) => {
+      acc[category.id] = category;
+      return acc;
+    },
+    {} as Record<string, Category>,
+  );
 
   // Reset to page 1 when filters change (excluding search, which is handled separately)
   useEffect(() => {
-    setCurrentPage(1)
-  }, [filters.type, filters.categoryId, filters.month, filters.year, debouncedSearch])
+    setCurrentPage(1);
+  }, [
+    filters.type,
+    filters.categoryId,
+    filters.month,
+    filters.year,
+    debouncedSearch,
+  ]);
 
   const handleEdit = (transaction: Transaction) => {
-    setEditingTransaction(transaction)
-    setOpenDialog(true)
-  }
+    setEditingTransaction(transaction);
+    setOpenDialog(true);
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir esta transação?")) {
-      return
+      return;
     }
 
     try {
       await deleteTransaction({
         variables: { id },
-      })
-      toast.success("Transação excluída com sucesso!")
-      refetchTransactions()
+      });
+      toast.success("Transação excluída com sucesso!");
+      refetchTransactions();
     } catch (error) {
-      console.error("Erro ao excluir transação:", error)
-      toast.error("Erro ao excluir transação. Tente novamente.")
+      console.error("Erro ao excluir transação:", error);
+      toast.error("Erro ao excluir transação. Tente novamente.");
     }
-  }
+  };
 
   const handleDialogClose = (open: boolean) => {
-    setOpenDialog(open)
+    setOpenDialog(open);
     if (!open) {
-      setEditingTransaction(null)
+      setEditingTransaction(null);
     }
-  }
+  };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value)
-  }
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: '2-digit'
-    })
-  }
+    // dateString is YYYY-MM-DD - append noon UTC to avoid timezone shift when displaying
+    const date = new Date(
+      dateString.includes("T") ? dateString : dateString + "T12:00:00",
+    );
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
+  };
 
   const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage)
-  }
+    setCurrentPage(newPage);
+  };
 
   return (
     <Page>
@@ -155,8 +179,10 @@ export function TransactionsPage() {
         {/* Header */}
         <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <Label className="text-3xl font-bold text-2xl text-gray-800">Transações</Label>
-            <Button 
+            <Label className="text-3xl font-bold text-2xl text-gray-800">
+              Transações
+            </Label>
+            <Button
               onClick={() => setOpenDialog(true)}
               className="bg-[#1D7A5E] hover:bg-[#166149]"
             >
@@ -164,7 +190,9 @@ export function TransactionsPage() {
               Nova transação
             </Button>
           </div>
-          <p className="text-sm text-gray-600">Gerencie todas as suas transações financeiras</p>
+          <p className="text-sm text-gray-600">
+            Gerencie todas as suas transações financeiras
+          </p>
         </div>
 
         {/* Filters */}
@@ -198,17 +226,24 @@ export function TransactionsPage() {
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-12">
                     <div className="text-gray-500">
-                      <p className="text-lg font-semibold mb-1">Nenhuma transação encontrada</p>
-                      <p className="text-sm">Tente ajustar os filtros ou adicione uma nova transação</p>
+                      <p className="text-lg font-semibold mb-1">
+                        Nenhuma transação encontrada
+                      </p>
+                      <p className="text-sm">
+                        Tente ajustar os filtros ou adicione uma nova transação
+                      </p>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 transactions.map((transaction) => {
-                  const category = transaction.categoryId ? categoryMap[transaction.categoryId] : null
-                  const IconComponent = category?.icon && CATEGORY_ICON_MAP[category.icon] 
-                    ? CATEGORY_ICON_MAP[category.icon] 
-                    : null
+                  const category = transaction.categoryId
+                    ? categoryMap[transaction.categoryId]
+                    : null;
+                  const IconComponent =
+                    category?.icon && CATEGORY_ICON_MAP[category.icon]
+                      ? CATEGORY_ICON_MAP[category.icon]
+                      : null;
 
                   return (
                     <TableRow key={transaction.id}>
@@ -216,11 +251,13 @@ export function TransactionsPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           {IconComponent ? (
-                            <div 
+                            <div
                               className="p-2 rounded-lg flex items-center justify-center"
-                              style={{ 
-                                backgroundColor: category?.color ? `${category.color}20` : '#F3F4F6',
-                                color: category?.color || '#6B7280'
+                              style={{
+                                backgroundColor: category?.color
+                                  ? `${category.color}20`
+                                  : "#F3F4F6",
+                                color: category?.color || "#6B7280",
                               }}
                             >
                               <IconComponent className="h-5 w-5" />
@@ -230,7 +267,9 @@ export function TransactionsPage() {
                               <div className="h-5 w-5 rounded bg-gray-300" />
                             </div>
                           )}
-                          <span className="font-medium text-gray-900">{transaction.description}</span>
+                          <span className="font-medium text-gray-900">
+                            {transaction.description}
+                          </span>
                         </div>
                       </TableCell>
 
@@ -242,11 +281,13 @@ export function TransactionsPage() {
                       {/* Category */}
                       <TableCell>
                         {category ? (
-                          <span 
+                          <span
                             className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                            style={{ 
-                              backgroundColor: category.color ? `${category.color}20` : '#F3F4F6',
-                              color: category.color || '#6B7280'
+                            style={{
+                              backgroundColor: category.color
+                                ? `${category.color}20`
+                                : "#F3F4F6",
+                              color: category.color || "#6B7280",
                             }}
                           >
                             {category.name}
@@ -261,24 +302,32 @@ export function TransactionsPage() {
                         {transaction.type === TransactionType.income ? (
                           <span className="inline-flex items-center gap-1.5 text-gray-600">
                             <UploadIcon className="h-4 w-4 text-green-600" />
-                            <span className="text-sm font-medium text-green-600">Entrada</span>
+                            <span className="text-sm font-medium text-green-600">
+                              Entrada
+                            </span>
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 text-red-600">
                             <DownloadIcon className="h-4 w-4 text-red-600" />
-                            <span className="text-sm font-medium text-red-600">Saída</span>
+                            <span className="text-sm font-medium text-red-600">
+                              Saída
+                            </span>
                           </span>
                         )}
                       </TableCell>
 
                       {/* Amount */}
                       <TableCell className="text-right">
-                        <span className={`font-semibold ${
-                          transaction.type === TransactionType.income 
-                            ? 'text-gray-900' 
-                            : 'text-gray-900'
-                        }`}>
-                          {transaction.type === TransactionType.income ? '+ ' : '- '}
+                        <span
+                          className={`font-semibold ${
+                            transaction.type === TransactionType.income
+                              ? "text-gray-900"
+                              : "text-gray-900"
+                          }`}
+                        >
+                          {transaction.type === TransactionType.income
+                            ? "+ "
+                            : "- "}
                           {formatCurrency(transaction.amount)}
                         </span>
                       </TableCell>
@@ -304,7 +353,7 @@ export function TransactionsPage() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  )
+                  );
                 })
               )}
             </TableBody>
@@ -314,9 +363,13 @@ export function TransactionsPage() {
           {pagination && pagination.totalItems > 0 && (
             <div className="flex items-center justify-between px-6 py-4 border-t">
               <div className="text-sm text-gray-600">
-                {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} a{" "}
-                {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} | {" "}
-                {pagination.totalItems} resultado{pagination.totalItems !== 1 ? 's' : ''}
+                {(pagination.currentPage - 1) * pagination.itemsPerPage + 1} a{" "}
+                {Math.min(
+                  pagination.currentPage * pagination.itemsPerPage,
+                  pagination.totalItems,
+                )}{" "}
+                | {pagination.totalItems} resultado
+                {pagination.totalItems !== 1 ? "s" : ""}
               </div>
               <div className="flex items-center gap-2">
                 <IconButton
@@ -326,16 +379,21 @@ export function TransactionsPage() {
                   onClick={() => handlePageChange(pagination.currentPage - 1)}
                   disabled={!pagination.hasPreviousPage}
                 />
-                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
+                {Array.from(
+                  { length: pagination.totalPages },
+                  (_, i) => i + 1,
+                ).map((page) => (
                   <Button
                     key={page}
-                    variant={page === pagination.currentPage ? "default" : "outline"}
+                    variant={
+                      page === pagination.currentPage ? "default" : "outline"
+                    }
                     size="sm"
                     onClick={() => handlePageChange(page)}
                     className={`h-8 w-8 p-0 ${
-                      page === pagination.currentPage 
-                        ? 'bg-[#1D7A5E] hover:bg-[#166149] text-white' 
-                        : ''
+                      page === pagination.currentPage
+                        ? "bg-[#1D7A5E] hover:bg-[#166149] text-white"
+                        : ""
                     }`}
                   >
                     {page}
@@ -361,5 +419,5 @@ export function TransactionsPage() {
         editingTransaction={editingTransaction}
       />
     </Page>
-  )
+  );
 }

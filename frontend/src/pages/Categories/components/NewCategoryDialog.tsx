@@ -1,42 +1,45 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { useMutation } from "@apollo/client/react"
-import { CREATE_CATEGORY, UPDATE_CATEGORY } from "@/lib/graphql/mutations/Category"
-import { Category, CreateCategoryInput, UpdateCategoryInput } from "@/types"
-import { toast } from "sonner"
-import { CATEGORY_ICON_MAP, AVAILABLE_CATEGORY_ICONS } from "@/constants/icons"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useMutation } from "@apollo/client/react";
+import {
+  CREATE_CATEGORY,
+  UPDATE_CATEGORY,
+} from "@/lib/graphql/mutations/Category";
+import { Category, CreateCategoryInput, UpdateCategoryInput } from "@/types";
+import { toast } from "sonner";
+import { CATEGORY_ICON_MAP, AVAILABLE_CATEGORY_ICONS } from "@/constants/icons";
 
 interface NewCategoryDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onCreated: () => void
-  editingCategory?: Category | null
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCreated: () => void;
+  editingCategory?: Category | null;
 }
 
 interface CreateCategoryMutationData {
-  createCategory: Category
+  createCategory: Category;
 }
 
 interface CreateCategoryMutationVariables {
-  data: CreateCategoryInput
+  data: CreateCategoryInput;
 }
 
 interface UpdateCategoryMutationData {
-  updateCategory: Category
+  updateCategory: Category;
 }
 
 interface UpdateCategoryMutationVariables {
-  id: string
-  data: UpdateCategoryInput
+  id: string;
+  data: UpdateCategoryInput;
 }
 
 const AVAILABLE_COLORS = [
@@ -47,39 +50,50 @@ const AVAILABLE_COLORS = [
   "#DC2626", // red
   "#EA580C", // orange
   "#CA8A04", // yellow
-]
+];
 
-export function NewCategoryDialog({ open, onOpenChange, onCreated, editingCategory }: NewCategoryDialogProps) {
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
-  const [selectedColor, setSelectedColor] = useState<string | null>(null)
+export function NewCategoryDialog({
+  open,
+  onOpenChange,
+  onCreated,
+  editingCategory,
+}: NewCategoryDialogProps) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
-  const [createCategory, { loading: creating }] = useMutation<CreateCategoryMutationData, CreateCategoryMutationVariables>(CREATE_CATEGORY)
-  const [updateCategory, { loading: updating }] = useMutation<UpdateCategoryMutationData, UpdateCategoryMutationVariables>(UPDATE_CATEGORY)
+  const [createCategory, { loading: creating }] = useMutation<
+    CreateCategoryMutationData,
+    CreateCategoryMutationVariables
+  >(CREATE_CATEGORY);
+  const [updateCategory, { loading: updating }] = useMutation<
+    UpdateCategoryMutationData,
+    UpdateCategoryMutationVariables
+  >(UPDATE_CATEGORY);
 
-  const loading = creating || updating
-  const isEditing = !!editingCategory
+  const loading = creating || updating;
+  const isEditing = !!editingCategory;
 
   // Reset form when dialog opens/closes or when editing category changes
   useEffect(() => {
     if (open && editingCategory) {
-      setName(editingCategory.name)
-      setDescription(editingCategory.description || "")
-      setSelectedIcon(editingCategory.icon || null)
-      setSelectedColor(editingCategory.color || null)
+      setName(editingCategory.name);
+      setDescription(editingCategory.description || "");
+      setSelectedIcon(editingCategory.icon || null);
+      setSelectedColor(editingCategory.color || null);
     } else if (!open) {
-      setName("")
-      setDescription("")
-      setSelectedIcon(null)
-      setSelectedColor(null)
+      setName("");
+      setDescription("");
+      setSelectedIcon(null);
+      setSelectedColor(null);
     }
-  }, [open, editingCategory])
+  }, [open, editingCategory]);
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      toast.error("O título não pode estar vazio")
-      return
+      toast.error("O título não pode estar vazio");
+      return;
     }
 
     try {
@@ -92,10 +106,10 @@ export function NewCategoryDialog({ open, onOpenChange, onCreated, editingCatego
               description: description || undefined,
               icon: selectedIcon || undefined,
               color: selectedColor || undefined,
-            }
-          }
-        })
-        toast.success("Categoria atualizada com sucesso!")
+            },
+          },
+        });
+        toast.success("Categoria atualizada com sucesso!");
       } else {
         await createCategory({
           variables: {
@@ -104,31 +118,35 @@ export function NewCategoryDialog({ open, onOpenChange, onCreated, editingCatego
               description: description || undefined,
               icon: selectedIcon || undefined,
               color: selectedColor || undefined,
-            }
-          }
-        })
-        toast.success("Categoria criada com sucesso!")
+            },
+          },
+        });
+        toast.success("Categoria criada com sucesso!");
       }
-      
-      onCreated()
-      onOpenChange(false)
+
+      onCreated();
+      onOpenChange(false);
     } catch (error) {
-      console.error("Erro ao salvar categoria:", error)
-      toast.error("Erro ao salvar categoria. Tente novamente.")
+      console.error("Erro ao salvar categoria:", error);
+      toast.error("Erro ao salvar categoria. Tente novamente.");
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Editar categoria" : "Nova categoria"}</DialogTitle>
+          <DialogTitle>
+            {isEditing ? "Editar categoria" : "Nova categoria"}
+          </DialogTitle>
           <p className="text-sm text-gray-500">
-            {isEditing ? "Atualize as informações da categoria" : "Organize suas transações com categorias"}
+            {isEditing
+              ? "Atualize as informações da categoria"
+              : "Organize suas transações com categorias"}
           </p>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-2">
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="name">Título</Label>
@@ -158,7 +176,7 @@ export function NewCategoryDialog({ open, onOpenChange, onCreated, editingCatego
             <Label>Ícone</Label>
             <div className="grid grid-cols-8 gap-2">
               {AVAILABLE_CATEGORY_ICONS.map((icon) => {
-                const IconComponent = CATEGORY_ICON_MAP[icon]
+                const IconComponent = CATEGORY_ICON_MAP[icon];
                 return (
                   <button
                     key={icon}
@@ -167,15 +185,16 @@ export function NewCategoryDialog({ open, onOpenChange, onCreated, editingCatego
                     className={`
                       p-3 rounded-lg border-2 transition-all hover:scale-110
                       flex items-center justify-center
-                      ${selectedIcon === icon 
-                        ? 'border-[#1D7A5E] text-[#1D7A5E]' 
-                        : 'border-gray-200 hover:border-gray-300 text-gray-500'
+                      ${
+                        selectedIcon === icon
+                          ? "border-[#1D7A5E] text-[#1D7A5E]"
+                          : "border-gray-200 hover:border-gray-300 text-gray-500"
                       }
                     `}
                   >
                     <IconComponent className="h-5 w-5" />
                   </button>
-                )
+                );
               })}
             </div>
           </div>
@@ -191,13 +210,14 @@ export function NewCategoryDialog({ open, onOpenChange, onCreated, editingCatego
                   onClick={() => setSelectedColor(color)}
                   className={`
                     relative h-9 w-14 rounded-xl transition-all hover:scale-105
-                    border-2 ${selectedColor === color 
-                      ? 'border-gray-900' 
-                      : 'border-gray-300'
+                    border-2 ${
+                      selectedColor === color
+                        ? "border-gray-900"
+                        : "border-gray-300"
                     }
                   `}
                 >
-                  <div 
+                  <div
                     className="absolute inset-1 rounded-lg"
                     style={{ backgroundColor: color }}
                   />
@@ -217,5 +237,5 @@ export function NewCategoryDialog({ open, onOpenChange, onCreated, editingCatego
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

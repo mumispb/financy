@@ -1,62 +1,63 @@
-import { Field, InputType, Int } from 'type-graphql'
-import { TransactionType } from '../../models/transaction.model'
+import { Field, InputType, Int } from "type-graphql";
+import { GraphQLDate } from "../../scalars/Date.scalar";
+import { TransactionType } from "../../models/transaction.model";
 
 @InputType()
 export class CreateTransactionInput {
   @Field(() => String)
-  description!: string
+  description!: string;
 
   @Field(() => Number)
-  amount!: number
+  amount!: number;
 
   @Field(() => TransactionType)
-  type!: TransactionType
+  type!: TransactionType;
 
   @Field(() => String, { nullable: true })
-  categoryId?: string
+  categoryId?: string;
 
-  @Field(() => Date, { nullable: true })
-  date?: Date
+  @Field(() => GraphQLDate, { nullable: true })
+  date?: string;
 }
 
 @InputType()
 export class UpdateTransactionInput {
   @Field(() => String, { nullable: true })
-  description?: string
+  description?: string;
 
   @Field(() => Number, { nullable: true })
-  amount?: number
+  amount?: number;
 
   @Field(() => TransactionType, { nullable: true })
-  type?: TransactionType
+  type?: TransactionType;
 
   @Field(() => String, { nullable: true })
-  categoryId?: string
+  categoryId?: string;
 
-  @Field(() => Date, { nullable: true })
-  date?: Date
+  @Field(() => GraphQLDate, { nullable: true })
+  date?: string;
 }
 
 @InputType()
 export class TransactionFiltersInput {
   @Field(() => String, { nullable: true })
-  search?: string
+  search?: string;
 
   @Field(() => TransactionType, { nullable: true })
-  type?: TransactionType
+  type?: TransactionType;
 
   @Field(() => String, { nullable: true })
-  categoryId?: string
+  categoryId?: string;
 
   @Field(() => Int, { nullable: true })
-  month?: number
+  month?: number;
 
   @Field(() => Int, { nullable: true })
-  year?: number
+  year?: number;
 
   @Field(() => Int, { defaultValue: 1 })
-  page!: number
+  page!: number;
 
   @Field(() => Int, { defaultValue: 10 })
-  limit!: number
+  limit!: number;
 }
