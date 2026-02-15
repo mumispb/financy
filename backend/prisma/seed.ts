@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { Role } from '../src/models/user.model'
